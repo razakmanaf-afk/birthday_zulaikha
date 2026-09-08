@@ -765,6 +765,9 @@
     <!-- Start Screen -->
     <div class="start-screen" id="startScreen">
         <button class="cta-button" onclick="startWelcome()">Start 💖</button>
+        <audio id="keyboardAudio" preload="auto">
+            <source src="keyboard-click.wav" type="audio/wav">
+        </audio>
     </div>
 
     <!-- Welcome Screen -->
@@ -874,10 +877,19 @@
         </div>
     </div>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        let youtubePlayer = null;
+        let youtubePlayerReady = false;
+        let youtubePlayRequested = false;
         let typingAudioContext = null;
 
         function playTypingSound() {
+            const keyboardAudio = document.getElementById('keyboardAudio');
+            const click = keyboardAudio.cloneNode();
+            click.volume = 0.8;
+            click.play().catch(() => {});
+
             if (!typingAudioContext) {
                 return;
             }
@@ -887,7 +899,7 @@
             const gain = typingAudioContext.createGain();
             oscillator.type = 'square';
             oscillator.frequency.setValueAtTime(760 + Math.random() * 140, now);
-            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.setValueAtTime(0.2, now);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
             oscillator.connect(gain);
             gain.connect(typingAudioContext.destination);
@@ -931,9 +943,45 @@
         async function startWelcome() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('welcomeScreen').classList.add('show');
+            const keyboardAudio = document.getElementById('keyboardAudio');
+            keyboardAudio.play().then(() => {
+                keyboardAudio.pause();
+                keyboardAudio.currentTime = 0;
+            }).catch(() => {});
             typingAudioContext = new (window.AudioContext || window.webkitAudioContext)();
             await typingAudioContext.resume();
             startWelcomeTyping();
+        }
+
+        function onYouTubeIframeAPIReady() {
+            youtubePlayer = new YT.Player('youtubeMusicPlayer', {
+                videoId: 'KZpfJ6n_CQ0',
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    playsinline: 1,
+                    rel: 0,
+                    origin: window.location.origin
+                },
+                events: {
+                    onReady: () => {
+                        youtubePlayerReady = true;
+                        if (youtubePlayRequested) {
+                            startYouTubeMusic();
+                        }
+                    }
+                }
+            });
+        }
+
+        function startYouTubeMusic() {
+            youtubePlayRequested = true;
+            if (!youtubePlayerReady) {
+                return;
+            }
+            youtubePlayer.unMute();
+            youtubePlayer.setVolume(100);
+            youtubePlayer.playVideo();
         }
 
         // Enter Website
@@ -945,8 +993,7 @@
             const mainContent = document.getElementById('mainContent');
             document.getElementById('welcomeScreen').classList.remove('show');
             document.getElementById('welcomeScreen').style.display = 'none';
-            const youtubePlayer = document.getElementById('youtubeMusicPlayer');
-            youtubePlayer.innerHTML = '<iframe src="https://www.youtube.com/embed/KZpfJ6n_CQ0?autoplay=1&playsinline=1&controls=0&rel=0" title="Bunga di Telinga" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+            startYouTubeMusic();
             finalVideoSlot.appendChild(finalVideoSection);
             finalVideoSection.style.display = 'flex';
             introVideo.muted = true;
@@ -966,7 +1013,11 @@
             introVideo.pause();
             introVideo.loop = false;
             introVideo.currentTime = 0;
-            document.getElementById('youtubeMusicPlayer').innerHTML = '';
+            if (youtubePlayerReady) {
+                youtubePlayer.stopVideo();
+                youtubePlayer.setVolume(0);
+            }
+            youtubePlayRequested = false;
             document.getElementById('finalVideoSection').style.display = 'none';
             document.getElementById('welcomeScreen').classList.add('show');
             document.getElementById('welcomeScreen').style.display = '';
