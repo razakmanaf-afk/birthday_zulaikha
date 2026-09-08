@@ -239,6 +239,14 @@
             text-transform: uppercase;
         }
 
+        .letter-message {
+            max-width: 760px;
+            margin: 0 auto;
+            text-align: left;
+            line-height: 1.8;
+            font-size: 1.08em;
+        }
+
         /* Wish Section */
         .wishes-grid {
             display: grid;
@@ -272,33 +280,61 @@
             margin: 20px 0;
         }
 
-        .gallery-item {
+        .gallery-card {
+            min-width: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            aspect-ratio: 1;
             border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 3em;
-            cursor: pointer;
-            transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            position: relative;
             overflow: hidden;
+            color: white;
+            position: relative;
+            transition: all 0.3s ease;
         }
 
-        .gallery-item:hover {
+        .gallery-card:hover {
             transform: scale(1.05);
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
-        .gallery-item::after {
+        .gallery-card-media {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            display: block;
+            object-fit: cover;
+        }
+
+        .gallery-card-description {
+            padding: 14px 15px 17px;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .gallery-card.video-card {
+            grid-column: 1 / -1;
+            width: 100%;
+        }
+
+        .gallery-card.video-card .gallery-card-media {
+            width: 100%;
+            height: clamp(180px, 42vw, 420px);
+            aspect-ratio: auto;
+            object-fit: cover;
+        }
+
+        .gallery-card.video-card::after {
             content: '';
             position: absolute;
             width: 100%;
             height: 100%;
             background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
             animation: shine 2s infinite;
+        }
+
+        @media (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
         }
 
         /* Counter Section */
@@ -794,46 +830,56 @@
         <div id="finalVideoSlot"></div>
         <section class="story-background bg1" aria-label="Birthday background one"></section>
         <div class="main-content" id="mainContent">
-            <button class="back-btn" onclick="goBack()">← Back</button>
 
-            <!-- Wishes Section -->
             <div class="section">
-                <h2>💕 Birthday Wishes</h2>
-                <div class="wishes-grid">
-                    <div class="wish-card" onclick="createFireworks(event)">
-                        ✨ You deserve all the happiness in the world today and every day!
-                    </div>
-                    <div class="wish-card" onclick="createFireworks(event)">
-                        🌟 May this year bring you incredible moments and beautiful memories!
-                    </div>
-                    <div class="wish-card" onclick="createFireworks(event)">
-                        💖 You make the world brighter just by being in it. Happy Birthday!
-                    </div>
-                    <div class="wish-card" onclick="createFireworks(event)">
-                        🎂 Another year older, another year wiser, and more amazing than ever!
-                    </div>
-                </div>
+                <h2>🎂 Happy birthday Sayang❤️</h2>
+                <p class="letter-message">Sebenarnya saya sangat bersyukur ada awak dalam hidup saya. Terima kasih sebab pilih saya and setia sampai sekarang. Sayang, awak tau tak sejak hadirnya awak dalam hidup saya, hidup saya jadi sangat gembira. Walaupun sya slalu buat awak serabut ehehe, tapi still awak sabar dengan saya selalu. Saya nak mintak maaf kalau saya ada buat salah dengan awak, bukan kalaulah, memang ada banyak pon. Saya tahu saya slalu cmburu, saya just takut hilang awak sayang, saya takut sangat. Saya tak pernah rasa disayangi macam ni sebelum ni, awaklah tempat saya nak kongsi lawak bapak2 saya, tempat saya nak cari ime saya takut ahhahaha, BTW SAYA BERANI. SAYANG, janji tau awak kawin dengan saya and setia sampai bila2. Saya janji dengan awak, asaya kan setia selamanya. Terima kasih sekali lagi sayang. Happy birthday wahai bungaku.<br><br>Yang benar,<br>jackiehomme</p>
             </div>
 
-            <!-- Age Counter -->
             <div class="section">
-                <h2>🎂 Your Birthday Count</h2>
-                <div class="counter-display" id="counter">Calculating...</div>
-                <p>Celebrate another year of awesomeness! 🌟</p>
+                <h2>💕 Peringatan kepada Zulaikha kesayangan saya </h2>
+                <div class="wishes-grid">
+                    <div class="wish-card" onclick="createFireworks(event)">
+                        ✨ Sayang, you deserve all the happiness in the world today and every day!
+                    </div>
+                    <div class="wish-card" onclick="createFireworks(event)">
+                        🌟 Sayang, nanti kita pegi Paris sama2 ye, itu kan wish awak 😊.
+                    </div>
+                    <div class="wish-card" onclick="createFireworks(event)">
+                        💖 Sayang, awak kuat saya tau, kalau awak sedih, jangan lupa yang saya sentiasa ada dengan awak.
+                    </div>
+                    <div class="wish-card" onclick="createFireworks(event)">
+                        🎂 Sayang, sayu tahu wish awak ape!! Awak nak akhwin ngan saya tahun depan kannnn!! Eh, tu wish saya 😅
+                    </div>
+                </div>
             </div>
 
             <!-- Gallery Section -->
             <div class="section">
                 <h2>📸 Memory Gallery</h2>
                 <div class="gallery-grid">
-                    <div class="gallery-item" onclick="createFireworks(event)">❤️</div>
-                    <div class="gallery-item" onclick="createFireworks(event)">😊</div>
-                    <div class="gallery-item" onclick="createFireworks(event)">✨</div>
-                    <div class="gallery-item" onclick="createFireworks(event)">🌸</div>
-                    <div class="gallery-item" onclick="createFireworks(event)">🎀</div>
-                    <div class="gallery-item" onclick="createFireworks(event)">💫</div>
+                    <article class="gallery-card" onclick="createFireworks(event)">
+                        <img class="gallery-card-media" src="firts%20meet.jpeg" alt="Our first meeting">
+                        <p class="gallery-card-description">Our first meet, the moment our story began. ❤️</p>
+                    </article>
+                    <article class="gallery-card" onclick="createFireworks(event)">
+                        <img class="gallery-card-media" src="caht.PNG" alt="Our chat">
+                        <p class="gallery-card-description">Our chats, where we started sharing little pieces of our days. 💬</p>
+                    </article>
+                    <article class="gallery-card" onclick="createFireworks(event)">
+                        <img class="gallery-card-media" src="call.PNG" alt="Our favorite call">
+                        <p class="gallery-card-description">Our favorite call, a memory I always keep close to my heart. 📞</p>
+                    </article>
+                    <article class="gallery-card" onclick="createFireworks(event)">
+                        <img class="gallery-card-media" src="gambar.JPG" alt="Our favorite picture">
+                        <p class="gallery-card-description">A special picture of us that makes me smile every time. ✨</p>
+                    </article>
+                    <article class="gallery-card video-card" onclick="createFireworks(event)">
+                        <video class="gallery-card-media" src="favVid.MP4" autoplay muted loop playsinline preload="auto" aria-label="Our favorite video"></video>
+                        <p class="gallery-card-description">Our favorite video, a little memory I could watch again and again. 🎬</p>
+                    </article>
                 </div>
-                <p style="margin-top: 20px;">Click on any emoji to create magic! ✨</p>
+                <p style="margin-top: 20px;">Click on a memory to create magic! ✨</p>
             </div>
         </div>
         <section class="story-background bg2" aria-label="Birthday background two"></section>
