@@ -77,6 +77,39 @@
             bottom: -10px;
         }
 
+        .continue-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 2100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.78);
+            text-align: center;
+        }
+
+        .continue-screen.show {
+            display: flex;
+        }
+
+        .continue-card {
+            max-width: 420px;
+            padding: 30px 24px;
+            border-radius: 24px;
+            color: #fff;
+            background: rgba(118, 75, 162, 0.96);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .continue-card h2 {
+            margin-bottom: 12px;
+        }
+
+        .continue-card p {
+            margin-bottom: 22px;
+        }
+
         /* Background Sections After Intro Video */
         .story-content {
             display: none;
@@ -735,6 +768,13 @@
             <source src="birthday-video-sound.m4a" type="audio/mp4">
         </audio>
     </div>
+    <div class="continue-screen" id="continueScreen">
+        <div class="continue-card">
+            <h2>✨ One More Step ✨</h2>
+            <p>Tap below to continue to your birthday surprise.</p>
+            <button class="cta-button" onclick="continueToBirthdayPage()">Continue 🎵</button>
+        </div>
+    </div>
     <div class="youtube-player" id="youtubeMusicPlayer" aria-hidden="true"></div>
 
     <!-- Background Sections After Video -->
@@ -955,15 +995,23 @@
             });
         }
 
-        // Show the two background sections after the video finishes.
-        function showPostVideoContent() {
+        // Ask for a direct tap before starting YouTube audio on mobile.
+        function showContinuePrompt() {
             const videoScreen = document.getElementById('videoScreen');
+            const continueScreen = document.getElementById('continueScreen');
+            fadeOutIntroAudio();
+            videoScreen.classList.remove('show');
+            continueScreen.classList.add('show');
+        }
+
+        // Show the two background sections after the user taps Continue.
+        function continueToBirthdayPage() {
+            const continueScreen = document.getElementById('continueScreen');
             const storyContent = document.getElementById('storyContent');
             const mainContent = document.getElementById('mainContent');
-            fadeOutIntroAudio();
             youtubeMusicRequested = true;
             fadeInYouTubeMusic();
-            videoScreen.classList.remove('show');
+            continueScreen.classList.remove('show');
             storyContent.classList.add('show');
             mainContent.classList.add('show');
             createConfetti();
@@ -987,6 +1035,7 @@
             }
             youtubeMusicRequested = false;
             document.getElementById('videoScreen').classList.remove('show');
+            document.getElementById('continueScreen').classList.remove('show');
             document.getElementById('storyContent').classList.remove('show');
             document.getElementById('mainContent').classList.remove('show');
             document.getElementById('welcomeScreen').style.display = 'flex';
@@ -1117,7 +1166,7 @@
             }, 6500); // Duration of animation sequence
         }
 
-        document.getElementById('introVideo').addEventListener('ended', showPostVideoContent);
+        document.getElementById('introVideo').addEventListener('ended', showContinuePrompt);
 
         // Scroll to Top
         window.addEventListener('scroll', () => {
