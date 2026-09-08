@@ -67,6 +67,16 @@
             object-fit: contain;
         }
 
+        .youtube-player {
+            position: fixed;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+            left: -10px;
+            bottom: -10px;
+        }
+
         /* Background Sections After Intro Video */
         .story-content {
             display: none;
@@ -717,11 +727,15 @@
 
     <!-- Intro Video Screen -->
     <div class="video-screen" id="videoScreen">
-        <video class="intro-video" id="introVideo" autoplay muted playsinline preload="auto" aria-label="Birthday celebration video">
+        <video class="intro-video" id="introVideo" autoplay playsinline preload="auto" aria-label="Birthday celebration video">
             <source src="Roblox_avatars_walking_in_forest_202609081601.mp4" type="video/mp4">
             Your browser does not support the birthday video.
         </video>
+        <audio id="introAudio" loop preload="auto">
+            <source src="birthday-video-sound.m4a" type="audio/mp4">
+        </audio>
     </div>
+    <div class="youtube-player" id="youtubeMusicPlayer" aria-hidden="true"></div>
 
     <!-- Background Sections After Video -->
     <div class="story-content" id="storyContent">
@@ -853,16 +867,91 @@
         </div>
     </div>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        let youtubePlayer = null;
+        let youtubePlayerReady = false;
+        let youtubeMusicRequested = false;
+
+        function onYouTubeIframeAPIReady() {
+            youtubePlayer = new YT.Player('youtubeMusicPlayer', {
+                videoId: 'KZpfJ6n_CQ0',
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    playsinline: 1,
+                    rel: 0
+                },
+                events: {
+                    onReady: () => {
+                        youtubePlayerReady = true;
+                        youtubePlayer.setVolume(0);
+                        if (youtubeMusicRequested) {
+                            fadeInYouTubeMusic();
+                        }
+                    }
+                }
+            });
+        }
+
+        function fadeOutIntroAudio() {
+            const introAudio = document.getElementById('introAudio');
+            const startingVolume = introAudio.volume;
+            const fadeDuration = 1800;
+            const fadeStartedAt = performance.now();
+
+            function step(now) {
+                const progress = Math.min((now - fadeStartedAt) / fadeDuration, 1);
+                introAudio.volume = startingVolume * (1 - progress);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    introAudio.pause();
+                    introAudio.currentTime = 0;
+                    introAudio.volume = startingVolume;
+                }
+            }
+
+            requestAnimationFrame(step);
+        }
+
+        function fadeInYouTubeMusic() {
+            if (!youtubePlayerReady) {
+                return;
+            }
+
+            youtubePlayer.setVolume(0);
+            youtubePlayer.playVideo();
+            const fadeDuration = 2500;
+            const fadeStartedAt = performance.now();
+
+            function step(now) {
+                const progress = Math.min((now - fadeStartedAt) / fadeDuration, 1);
+                youtubePlayer.setVolume(Math.round(progress * 100));
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+
+            requestAnimationFrame(step);
+        }
+
         // Enter Website
         function enterWebsite() {
             const videoScreen = document.getElementById('videoScreen');
             const introVideo = document.getElementById('introVideo');
+            const introAudio = document.getElementById('introAudio');
             document.getElementById('welcomeScreen').style.display = 'none';
             videoScreen.classList.add('show');
+            introVideo.muted = true;
             introVideo.currentTime = 0;
+            introAudio.currentTime = 0;
+            introAudio.volume = 1;
             introVideo.play().catch(() => {
                 videoScreen.classList.add('video-playback-blocked');
+            });
+            introAudio.play().catch(() => {
+                videoScreen.classList.add('audio-playback-blocked');
             });
         }
 
@@ -871,7 +960,9 @@
             const videoScreen = document.getElementById('videoScreen');
             const storyContent = document.getElementById('storyContent');
             const mainContent = document.getElementById('mainContent');
-
+            fadeOutIntroAudio();
+            youtubeMusicRequested = true;
+            fadeInYouTubeMusic();
             videoScreen.classList.remove('show');
             storyContent.classList.add('show');
             mainContent.classList.add('show');
@@ -883,8 +974,18 @@
         // Go Back
         function goBack() {
             const introVideo = document.getElementById('introVideo');
+            const introAudio = document.getElementById('introAudio');
+            introVideo.muted = false;
             introVideo.pause();
+            introAudio.pause();
             introVideo.currentTime = 0;
+            introAudio.currentTime = 0;
+            introAudio.volume = 1;
+            if (youtubePlayerReady) {
+                youtubePlayer.stopVideo();
+                youtubePlayer.setVolume(0);
+            }
+            youtubeMusicRequested = false;
             document.getElementById('videoScreen').classList.remove('show');
             document.getElementById('storyContent').classList.remove('show');
             document.getElementById('mainContent').classList.remove('show');
