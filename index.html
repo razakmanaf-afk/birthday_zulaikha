@@ -39,6 +39,25 @@
             text-align: center;
             color: white;
             animation: fadeIn 1s ease-in;
+            display: none;
+        }
+
+        .welcome-screen.show {
+            display: flex;
+        }
+
+        .start-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        .start-screen.hidden {
+            display: none;
         }
 
         .welcome-content {
@@ -46,69 +65,39 @@
             padding: 20px;
         }
 
-        /* Intro Video */
-        .video-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 2000;
-            display: none;
+        /* Final Page Video */
+        .final-video-section {
+            width: 100%;
+            display: flex;
             justify-content: center;
             align-items: center;
             background: #000;
-        }
-
-        .video-screen.show {
-            display: flex;
+            padding: 18px;
         }
 
         .intro-video {
-            width: 100%;
-            height: 100%;
+            display: block;
+            width: min(720px, 92vw);
+            height: min(405px, 52vh);
             object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
         }
 
         .youtube-player {
             position: fixed;
             width: 200px;
             height: 113px;
-            opacity: 0.01;
+            opacity: 0;
             pointer-events: none;
-            left: 50%;
+            left: -1000px;
             bottom: 8px;
-            transform: translateX(-50%);
         }
 
-        .continue-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 2100;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
-            background: rgba(0, 0, 0, 0.78);
-            text-align: center;
-        }
-
-        .continue-screen.show {
-            display: flex;
-        }
-
-        .continue-card {
-            max-width: 420px;
-            padding: 30px 24px;
-            border-radius: 24px;
-            color: #fff;
-            background: rgba(118, 75, 162, 0.96);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
-        }
-
-        .continue-card h2 {
-            margin-bottom: 12px;
-        }
-
-        .continue-card p {
-            margin-bottom: 22px;
+        .youtube-player iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
 
         /* Background Sections After Intro Video */
@@ -773,6 +762,11 @@
     </style>
 </head>
 <body>
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+        <button class="cta-button" onclick="startWelcome()">Start 💖</button>
+    </div>
+
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcomeScreen">
         <div class="welcome-content">
@@ -783,24 +777,18 @@
         </div>
     </div>
 
-    <!-- Intro Video Screen -->
-    <div class="video-screen" id="videoScreen">
+    <!-- Final Page Video -->
+    <div class="final-video-section" id="finalVideoSection" style="display: none;">
         <video class="intro-video" id="introVideo" autoplay playsinline preload="auto" aria-label="Birthday celebration video">
             <source src="Roblox_avatars_walking_in_forest_202609081601.mp4" type="video/mp4">
             Your browser does not support the birthday video.
         </video>
     </div>
-    <div class="continue-screen" id="continueScreen">
-        <div class="continue-card">
-            <h2>✨ One More Step ✨</h2>
-            <p>Tap below to continue to your birthday surprise.</p>
-            <button class="cta-button" onclick="continueToBirthdayPage()">Continue 🎵</button>
-        </div>
-    </div>
     <div class="youtube-player" id="youtubeMusicPlayer" aria-hidden="true"></div>
 
     <!-- Background Sections After Video -->
     <div class="story-content" id="storyContent">
+        <div id="finalVideoSlot"></div>
         <section class="story-background bg1" aria-label="Birthday background one"></section>
         <div class="main-content" id="mainContent">
             <button class="back-btn" onclick="goBack()">← Back</button>
@@ -886,33 +874,25 @@
         </div>
     </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        let youtubePlayer = null;
-        let youtubePlayerReady = false;
-        let youtubeMusicRequested = false;
         let typingAudioContext = null;
 
         function playTypingSound() {
-            try {
-                typingAudioContext = typingAudioContext || new (window.AudioContext || window.webkitAudioContext)();
-                if (typingAudioContext.state === 'suspended') {
-                    typingAudioContext.resume().catch(() => {});
-                }
-
-                const oscillator = typingAudioContext.createOscillator();
-                const gain = typingAudioContext.createGain();
-                oscillator.type = 'square';
-                oscillator.frequency.value = 520 + Math.random() * 100;
-                gain.gain.setValueAtTime(0.035, typingAudioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, typingAudioContext.currentTime + 0.045);
-                oscillator.connect(gain);
-                gain.connect(typingAudioContext.destination);
-                oscillator.start();
-                oscillator.stop(typingAudioContext.currentTime + 0.045);
-            } catch (error) {
-                // Some browsers block audio until the first user interaction.
+            if (!typingAudioContext) {
+                return;
             }
+
+            const now = typingAudioContext.currentTime;
+            const oscillator = typingAudioContext.createOscillator();
+            const gain = typingAudioContext.createGain();
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(760 + Math.random() * 140, now);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+            oscillator.connect(gain);
+            gain.connect(typingAudioContext.destination);
+            oscillator.start(now);
+            oscillator.stop(now + 0.055);
         }
 
         function typeText(element, text, speed) {
@@ -948,78 +928,31 @@
             button.classList.remove('typing-hidden');
         }
 
-        function onYouTubeIframeAPIReady() {
-            youtubePlayer = new YT.Player('youtubeMusicPlayer', {
-                videoId: 'KZpfJ6n_CQ0',
-                playerVars: {
-                    autoplay: 0,
-                    controls: 0,
-                    playsinline: 1,
-                    rel: 0,
-                    origin: window.location.origin
-                },
-                events: {
-                    onReady: () => {
-                        youtubePlayerReady = true;
-                        youtubePlayer.setVolume(0);
-                        if (youtubeMusicRequested) {
-                            fadeInYouTubeMusic();
-                        }
-                    }
-                }
-            });
-        }
-
-        function fadeInYouTubeMusic() {
-            if (!youtubePlayerReady) {
-                return;
-            }
-
-            youtubePlayer.setVolume(0);
-            youtubePlayer.playVideo();
-            const fadeDuration = 2500;
-            const fadeStartedAt = performance.now();
-
-            function step(now) {
-                const progress = Math.min((now - fadeStartedAt) / fadeDuration, 1);
-                youtubePlayer.setVolume(Math.round(progress * 100));
-                if (progress < 1) {
-                    requestAnimationFrame(step);
-                }
-            }
-
-            requestAnimationFrame(step);
+        async function startWelcome() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.add('show');
+            typingAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            await typingAudioContext.resume();
+            startWelcomeTyping();
         }
 
         // Enter Website
         function enterWebsite() {
-            const videoScreen = document.getElementById('videoScreen');
             const introVideo = document.getElementById('introVideo');
-            document.getElementById('welcomeScreen').style.display = 'none';
-            videoScreen.classList.add('show');
-            introVideo.muted = false;
-            introVideo.currentTime = 0;
-            introVideo.play().catch(() => {
-                videoScreen.classList.add('video-playback-blocked');
-            });
-        }
-
-        // Ask for a direct tap before starting YouTube audio on mobile.
-        function showContinuePrompt() {
-            const videoScreen = document.getElementById('videoScreen');
-            const continueScreen = document.getElementById('continueScreen');
-            videoScreen.classList.remove('show');
-            continueScreen.classList.add('show');
-        }
-
-        // Show the two background sections after the user taps Continue.
-        function continueToBirthdayPage() {
-            const continueScreen = document.getElementById('continueScreen');
+            const finalVideoSection = document.getElementById('finalVideoSection');
+            const finalVideoSlot = document.getElementById('finalVideoSlot');
             const storyContent = document.getElementById('storyContent');
             const mainContent = document.getElementById('mainContent');
-            youtubeMusicRequested = true;
-            fadeInYouTubeMusic();
-            continueScreen.classList.remove('show');
+            document.getElementById('welcomeScreen').classList.remove('show');
+            document.getElementById('welcomeScreen').style.display = 'none';
+            const youtubePlayer = document.getElementById('youtubeMusicPlayer');
+            youtubePlayer.innerHTML = '<iframe src="https://www.youtube.com/embed/KZpfJ6n_CQ0?autoplay=1&playsinline=1&controls=0&rel=0" title="Bunga di Telinga" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+            finalVideoSlot.appendChild(finalVideoSection);
+            finalVideoSection.style.display = 'flex';
+            introVideo.muted = true;
+            introVideo.loop = true;
+            introVideo.currentTime = 0;
+            introVideo.play().catch(() => {});
             storyContent.classList.add('show');
             mainContent.classList.add('show');
             createConfetti();
@@ -1030,19 +963,15 @@
         // Go Back
         function goBack() {
             const introVideo = document.getElementById('introVideo');
-            introVideo.muted = false;
             introVideo.pause();
+            introVideo.loop = false;
             introVideo.currentTime = 0;
-            if (youtubePlayerReady) {
-                youtubePlayer.stopVideo();
-                youtubePlayer.setVolume(0);
-            }
-            youtubeMusicRequested = false;
-            document.getElementById('videoScreen').classList.remove('show');
-            document.getElementById('continueScreen').classList.remove('show');
+            document.getElementById('youtubeMusicPlayer').innerHTML = '';
+            document.getElementById('finalVideoSection').style.display = 'none';
+            document.getElementById('welcomeScreen').classList.add('show');
+            document.getElementById('welcomeScreen').style.display = '';
             document.getElementById('storyContent').classList.remove('show');
             document.getElementById('mainContent').classList.remove('show');
-            document.getElementById('welcomeScreen').style.display = 'flex';
         }
 
         // Create Confetti
@@ -1170,8 +1099,6 @@
             }, 6500); // Duration of animation sequence
         }
 
-        document.getElementById('introVideo').addEventListener('ended', showContinuePrompt);
-
         // Scroll to Top
         window.addEventListener('scroll', () => {
             const scrollBtn = document.getElementById('scrollBtn');
@@ -1188,7 +1115,6 @@
 
         // Load saved message on page load
         window.addEventListener('load', () => {
-            startWelcomeTyping();
             const savedMessage = localStorage.getItem('birthdayMessage');
             if (savedMessage) {
                 console.log('💌 Saved Message:', savedMessage);
