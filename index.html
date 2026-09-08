@@ -69,12 +69,13 @@
 
         .youtube-player {
             position: fixed;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
+            width: 200px;
+            height: 113px;
+            opacity: 0.01;
             pointer-events: none;
-            left: -10px;
-            bottom: -10px;
+            left: 50%;
+            bottom: 8px;
+            transform: translateX(-50%);
         }
 
         .continue-screen {
@@ -160,6 +161,15 @@
             animation: slideUp 1s ease-out;
         }
 
+        .welcome-title.typing,
+        .welcome-subtitle.typing {
+            min-height: 1.2em;
+        }
+
+        .welcome-content .cta-button.typing-hidden {
+            display: none;
+        }
+
         .cta-button {
             background: white;
             color: #667eea;
@@ -196,13 +206,28 @@
 
         /* Main Content */
         .main-content {
+            position: relative;
+            isolation: isolate;
             width: 100%;
-            background: linear-gradient(135deg, rgba(102,126,234,0.92) 0%, rgba(118,75,162,0.92) 50%, rgba(240,147,251,0.92) 100%);
-            min-height: 100vh;
+            min-height: auto;
             padding: 20px;
             display: none;
             flex-direction: column;
             gap: 30px;
+            overflow: hidden;
+        }
+
+        .main-content::before {
+            content: '';
+            position: absolute;
+            inset: -25px;
+            z-index: -1;
+            background:
+                linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.55)),
+                url('bg1.jpg') center top / 100% 50% no-repeat,
+                url('bg2.jpg') center bottom / 100% 50% no-repeat;
+            filter: blur(16px);
+            transform: scale(1.05);
         }
 
         .main-content.show {
@@ -752,9 +777,9 @@
     <div class="welcome-screen" id="welcomeScreen">
         <div class="welcome-content">
             <div class="birthday-emoji">🎉</div>
-            <h1 class="welcome-title">Happy Birthday!</h1>
-            <p class="welcome-subtitle">Click below to enter the magic 🎊</p>
-            <button class="cta-button" onclick="enterWebsite()">Let's Celebrate! 🎈</button>
+            <h1 class="welcome-title typing" id="welcomeTitle"></h1>
+            <p class="welcome-subtitle typing" id="welcomeSubtitle"></p>
+            <button class="cta-button typing-hidden" id="welcomeButton" onclick="enterWebsite()">My Love 💖</button>
         </div>
     </div>
 
@@ -764,9 +789,6 @@
             <source src="Roblox_avatars_walking_in_forest_202609081601.mp4" type="video/mp4">
             Your browser does not support the birthday video.
         </video>
-        <audio id="introAudio" loop preload="auto">
-            <source src="birthday-video-sound.m4a" type="audio/mp4">
-        </audio>
     </div>
     <div class="continue-screen" id="continueScreen">
         <div class="continue-card">
@@ -780,93 +802,50 @@
     <!-- Background Sections After Video -->
     <div class="story-content" id="storyContent">
         <section class="story-background bg1" aria-label="Birthday background one"></section>
+        <div class="main-content" id="mainContent">
+            <button class="back-btn" onclick="goBack()">← Back</button>
+
+            <!-- Wishes Section -->
+            <div class="section">
+                <h2>💕 Birthday Wishes</h2>
+                <div class="wishes-grid">
+                    <div class="wish-card" onclick="createFireworks(event)">
+                        ✨ You deserve all the happiness in the world today and every day!
+                    </div>
+                    <div class="wish-card" onclick="createFireworks(event)">
+                        🌟 May this year bring you incredible moments and beautiful memories!
+                    </div>
+                    <div class="wish-card" onclick="createFireworks(event)">
+                        💖 You make the world brighter just by being in it. Happy Birthday!
+                    </div>
+                    <div class="wish-card" onclick="createFireworks(event)">
+                        🎂 Another year older, another year wiser, and more amazing than ever!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Age Counter -->
+            <div class="section">
+                <h2>🎂 Your Birthday Count</h2>
+                <div class="counter-display" id="counter">Calculating...</div>
+                <p>Celebrate another year of awesomeness! 🌟</p>
+            </div>
+
+            <!-- Gallery Section -->
+            <div class="section">
+                <h2>📸 Memory Gallery</h2>
+                <div class="gallery-grid">
+                    <div class="gallery-item" onclick="createFireworks(event)">❤️</div>
+                    <div class="gallery-item" onclick="createFireworks(event)">😊</div>
+                    <div class="gallery-item" onclick="createFireworks(event)">✨</div>
+                    <div class="gallery-item" onclick="createFireworks(event)">🌸</div>
+                    <div class="gallery-item" onclick="createFireworks(event)">🎀</div>
+                    <div class="gallery-item" onclick="createFireworks(event)">💫</div>
+                </div>
+                <p style="margin-top: 20px;">Click on any emoji to create magic! ✨</p>
+            </div>
+        </div>
         <section class="story-background bg2" aria-label="Birthday background two"></section>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content" id="mainContent">
-        <button class="back-btn" onclick="goBack()">← Back</button>
-
-        <!-- Wishes Section -->
-        <div class="section">
-            <h2>💕 Birthday Wishes</h2>
-            <div class="wishes-grid">
-                <div class="wish-card" onclick="createFireworks(event)">
-                    ✨ You deserve all the happiness in the world today and every day!
-                </div>
-                <div class="wish-card" onclick="createFireworks(event)">
-                    🌟 May this year bring you incredible moments and beautiful memories!
-                </div>
-                <div class="wish-card" onclick="createFireworks(event)">
-                    💖 You make the world brighter just by being in it. Happy Birthday!
-                </div>
-                <div class="wish-card" onclick="createFireworks(event)">
-                    🎂 Another year older, another year wiser, and more amazing than ever!
-                </div>
-            </div>
-        </div>
-
-        <!-- Age Counter -->
-        <div class="section">
-            <h2>🎂 Your Birthday Count</h2>
-            <div class="counter-display" id="counter">Calculating...</div>
-            <p>Celebrate another year of awesomeness! 🌟</p>
-        </div>
-
-        <!-- Gallery Section -->
-        <div class="section">
-            <h2>📸 Memory Gallery</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item" onclick="createFireworks(event)">❤️</div>
-                <div class="gallery-item" onclick="createFireworks(event)">😊</div>
-                <div class="gallery-item" onclick="createFireworks(event)">✨</div>
-                <div class="gallery-item" onclick="createFireworks(event)">🌸</div>
-                <div class="gallery-item" onclick="createFireworks(event)">🎀</div>
-                <div class="gallery-item" onclick="createFireworks(event)">💫</div>
-            </div>
-            <p style="margin-top: 20px;">Click on any emoji to create magic! ✨</p>
-        </div>
-
-        <!-- Music Section -->
-        <div class="section">
-            <h2>🎵 Birthday Music</h2>
-            <div class="music-controls">
-                <button class="music-btn" onclick="playBirthdaySong()">🎵 Play Music</button>
-                <button class="music-btn" onclick="stopBirthdaySong()">⏹ Stop</button>
-            </div>
-            <audio id="birthdayAudio" style="display: none;">
-                <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
-            </audio>
-        </div>
-
-        <!-- Interactive Quiz -->
-        <div class="section">
-            <h2>🎮 How Well Do You Know Me?</h2>
-            <div style="text-align: left; margin: 20px 0;">
-                <p style="margin: 15px 0; font-size: 1.1em;"><strong>Question: What's my favorite color?</strong></p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button class="music-btn" onclick="answer(this, false)">Red</button>
-                    <button class="music-btn" onclick="answer(this, true)">Purple</button>
-                    <button class="music-btn" onclick="answer(this, false)">Blue</button>
-                    <button class="music-btn" onclick="answer(this, false)">Pink</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Message Section -->
-        <div class="section">
-            <h2>📝 Send Me A Message</h2>
-            <div class="message-form">
-                <textarea class="message-input" id="userMessage" placeholder="Write your birthday wishes or special message here..." rows="4"></textarea>
-                <button class="submit-btn" onclick="saveMessage()">💌 Save Message</button>
-            </div>
-        </div>
-
-        <!-- Celebration Button -->
-        <div class="section">
-            <h2>🎊 Let's Celebrate!</h2>
-            <button class="cta-button" onclick="bigCelebration()" style="width: 100%; max-width: 300px;">CELEBRATE NOW! 🎉</button>
-        </div>
     </div>
 
     <!-- Scroll to Top Button -->
@@ -912,6 +891,62 @@
         let youtubePlayer = null;
         let youtubePlayerReady = false;
         let youtubeMusicRequested = false;
+        let typingAudioContext = null;
+
+        function playTypingSound() {
+            try {
+                typingAudioContext = typingAudioContext || new (window.AudioContext || window.webkitAudioContext)();
+                if (typingAudioContext.state === 'suspended') {
+                    typingAudioContext.resume().catch(() => {});
+                }
+
+                const oscillator = typingAudioContext.createOscillator();
+                const gain = typingAudioContext.createGain();
+                oscillator.type = 'square';
+                oscillator.frequency.value = 520 + Math.random() * 100;
+                gain.gain.setValueAtTime(0.035, typingAudioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, typingAudioContext.currentTime + 0.045);
+                oscillator.connect(gain);
+                gain.connect(typingAudioContext.destination);
+                oscillator.start();
+                oscillator.stop(typingAudioContext.currentTime + 0.045);
+            } catch (error) {
+                // Some browsers block audio until the first user interaction.
+            }
+        }
+
+        function typeText(element, text, speed) {
+            return new Promise((resolve) => {
+                let index = 0;
+                const typeNextCharacter = () => {
+                    if (index >= text.length) {
+                        resolve();
+                        return;
+                    }
+
+                    element.textContent += text[index];
+                    if (text[index] !== ' ') {
+                        playTypingSound();
+                    }
+                    index++;
+                    setTimeout(typeNextCharacter, speed);
+                };
+                typeNextCharacter();
+            });
+        }
+
+        async function startWelcomeTyping() {
+            const title = document.getElementById('welcomeTitle');
+            const subtitle = document.getElementById('welcomeSubtitle');
+            const button = document.getElementById('welcomeButton');
+            title.textContent = '';
+            subtitle.textContent = '';
+            button.classList.add('typing-hidden');
+            await typeText(title, 'Hye sayang, ni saya sayang awak!', 75);
+            await new Promise((resolve) => setTimeout(resolve, 350));
+            await typeText(subtitle, 'Awak tekan la butang bawah ni sayang 😊', 65);
+            button.classList.remove('typing-hidden');
+        }
 
         function onYouTubeIframeAPIReady() {
             youtubePlayer = new YT.Player('youtubeMusicPlayer', {
@@ -920,7 +955,8 @@
                     autoplay: 0,
                     controls: 0,
                     playsinline: 1,
-                    rel: 0
+                    rel: 0,
+                    origin: window.location.origin
                 },
                 events: {
                     onReady: () => {
@@ -932,27 +968,6 @@
                     }
                 }
             });
-        }
-
-        function fadeOutIntroAudio() {
-            const introAudio = document.getElementById('introAudio');
-            const startingVolume = introAudio.volume;
-            const fadeDuration = 1800;
-            const fadeStartedAt = performance.now();
-
-            function step(now) {
-                const progress = Math.min((now - fadeStartedAt) / fadeDuration, 1);
-                introAudio.volume = startingVolume * (1 - progress);
-                if (progress < 1) {
-                    requestAnimationFrame(step);
-                } else {
-                    introAudio.pause();
-                    introAudio.currentTime = 0;
-                    introAudio.volume = startingVolume;
-                }
-            }
-
-            requestAnimationFrame(step);
         }
 
         function fadeInYouTubeMusic() {
@@ -980,18 +995,12 @@
         function enterWebsite() {
             const videoScreen = document.getElementById('videoScreen');
             const introVideo = document.getElementById('introVideo');
-            const introAudio = document.getElementById('introAudio');
             document.getElementById('welcomeScreen').style.display = 'none';
             videoScreen.classList.add('show');
-            introVideo.muted = true;
+            introVideo.muted = false;
             introVideo.currentTime = 0;
-            introAudio.currentTime = 0;
-            introAudio.volume = 1;
             introVideo.play().catch(() => {
                 videoScreen.classList.add('video-playback-blocked');
-            });
-            introAudio.play().catch(() => {
-                videoScreen.classList.add('audio-playback-blocked');
             });
         }
 
@@ -999,7 +1008,6 @@
         function showContinuePrompt() {
             const videoScreen = document.getElementById('videoScreen');
             const continueScreen = document.getElementById('continueScreen');
-            fadeOutIntroAudio();
             videoScreen.classList.remove('show');
             continueScreen.classList.add('show');
         }
@@ -1022,13 +1030,9 @@
         // Go Back
         function goBack() {
             const introVideo = document.getElementById('introVideo');
-            const introAudio = document.getElementById('introAudio');
             introVideo.muted = false;
             introVideo.pause();
-            introAudio.pause();
             introVideo.currentTime = 0;
-            introAudio.currentTime = 0;
-            introAudio.volume = 1;
             if (youtubePlayerReady) {
                 youtubePlayer.stopVideo();
                 youtubePlayer.setVolume(0);
@@ -1184,6 +1188,7 @@
 
         // Load saved message on page load
         window.addEventListener('load', () => {
+            startWelcomeTyping();
             const savedMessage = localStorage.getItem('birthdayMessage');
             if (savedMessage) {
                 console.log('💌 Saved Message:', savedMessage);
